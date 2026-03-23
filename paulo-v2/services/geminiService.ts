@@ -1,7 +1,7 @@
 
 import { GoogleGenAI, Type } from "@google/genai";
 
-const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
 
 // Função auxiliar para limpar a resposta da IA antes do Parse
 const safeParse = (text: string) => {
@@ -16,19 +16,42 @@ const safeParse = (text: string) => {
 
 export const generateSermonOutline = async (topic: string, theme: string, reference?: string) => {
   const prompt = `
-    Aja como um renomado teólogo e pregador exegético. Crie um sermão completo baseado no assunto "${topic}", tema "${theme}" e na referência "${reference || 'Sugerir uma apropriada'}".
-    
-    ESTRUTURA OBRIGATÓRIA:
-    2. EXEGESE, 3. HERMENÊUTICA, 5. TEMA, 6. GANCHO, 8. INTRODUÇÃO, 9. CORPO (3 PONTOS), 10. CONCLUSÃO.
-    
-    REGRAS ADICIONAIS:
-    - NÃO inclua as partes: "1. PREPARAÇÃO (Versículos)", "4. NARRAÇÃO DRAMÁTICA", "7. QUEBRA-GELO".
-    - A CONCLUSÃO deve ter no máximo 50 palavras.
-    - NÃO inclua parte de oração na conclusão.
+    Atue como Teólogo e pastor. Crie um sermão completo baseado no assunto "${topic}", tema "${theme}" e na referência "${reference || 'Sugerir uma apropriada'}".
+    Execute a seguinte tarefa seguindo exatamente a ordem e numeração abaixo:
+
+    1 - Faça um sermão para pregação na sequência dos versículos propostos.
+
+    2 - Exegese dos Versículos: Faça uma análise detalhada e crítica do texto original (grego/hebraico), buscando o significado literal, gramatical e contextual das palavras e frases.
+
+    3 - Hermenêutica dos Versículos: Interprete o significado do texto para o ouvinte moderno, aplicando os princípios corretos de interpretação (gênero literário, unidade da Escritura, etc.).
+
+    4 - Narração Dramática: Atue como um narrador e faça uma narração com os versículos bíblicos propostos. O tom deve ser forte e dramático, contendo o Contexto Histórico (data, eventos contemporâneos, autor, destinatário) e Contexto Cultural (costumes, tradições). 
+        - Extensão: Entre 300 a 400 palavras.
+        - Formatação: Deixe em negrito as partes de maior relevância.
+
+    5 - Preparação: O texto bíblico integral dos Versículos Propostos.
+
+    6 - Tema: Defina o tema central (título) do sermão.
+
+    7 - Gancho / Chamada para a Atenção (Abertura Impactante): Crie uma declaração ou pergunta forte para capturar imediatamente a atenção da audiência.
+
+    8 - Quebra-Gelo para Iniciar a Pregação: Proponha uma breve atividade ou pergunta relacionada ao tema, antes da leitura da passagem.
+
+    9 - Introdução: Apresente o tema, a passagem e a tese central do sermão.
+
+    10 - Corpo da Pregação Expositiva e Prática (Três Pontos Principais):
+        - Estrutura de Versículos: Distribua os versículos sequencialmente em grupos de 2 (ou 1 por ponto).
+        - Extensão: Cada ponto deve ter entre 450 a 500 palavras.
+        - Conteúdo: Elaborado com a Análise Hermenêutica Completa, citando comentários e explorando contextos histórico e cultural.
+        - Versículo de Apoio: Inclua um versículo bíblico adicional de apoio que reforce a ideia central do ponto.
+        - Ênfase: Utilize o negrito para destacar as partes mais importantes.
+        - Frase de Impacto: Finalize a seção de cada ponto com uma citação ou frase de impacto que resuma a conclusão do argumento.
+
+    11 - Conclusão: Apresente um resumo poderoso dos três pontos abordados com exatamente 50 palavras.
   `;
 
   const response = await ai.models.generateContent({
-    model: 'gemini-3.1-flash-lite-preview',
+    model: 'gemini-2.5-flash-lite',
     contents: prompt,
   });
   return response.text;
@@ -39,7 +62,7 @@ export const getBibleChapter = async (book: string, chapter: string, version: st
   Retorne em JSON: book, chapter, version, verses (array de {number, text}), summary.`;
 
   const response = await ai.models.generateContent({
-    model: 'gemini-3.1-flash-lite-preview',
+    model: 'gemini-2.5-flash-lite',
     contents: prompt,
     config: {
       responseMimeType: "application/json",
@@ -70,7 +93,7 @@ export const getSpecificVerseText = async (book: string, reference: string) => {
   Retorne em JSON: { "text": "texto integral aqui", "reference": "${book} ${reference}" }.`;
 
   const response = await ai.models.generateContent({
-    model: 'gemini-3.1-flash-lite-preview',
+    model: 'gemini-2.5-flash-lite',
     contents: prompt,
     config: {
       responseMimeType: "application/json",
@@ -97,7 +120,7 @@ export const getBiblicalDeepDive = async (reference: string) => {
   5. Análise Linguística e Teológica (Palavras-chave em Grego/Hebraico, Temas Centrais, Relação com o Cânon).`;
 
   const response = await ai.models.generateContent({
-    model: 'gemini-3.1-flash-lite-preview',
+    model: 'gemini-2.5-flash-lite',
     contents: prompt,
     config: {
       responseMimeType: "application/json",
@@ -161,7 +184,7 @@ export const getBiblicalCommentary = async (passage: string) => {
   Certifique-se de preencher todos os campos com rigor acadêmico e profundidade teológica.`;
 
   const response = await ai.models.generateContent({
-    model: 'gemini-3.1-flash-lite-preview',
+    model: 'gemini-2.5-flash-lite',
     contents: prompt,
     config: {
       responseMimeType: "application/json",
@@ -189,7 +212,7 @@ export const getBiblicalBiography = async (character: string) => {
   Liste também as principais passagens bíblicas (apenas Livro e Referência cap:ver).`;
 
   const response = await ai.models.generateContent({
-    model: 'gemini-3.1-flash-lite-preview',
+    model: 'gemini-2.5-flash-lite',
     contents: prompt,
     config: {
       responseMimeType: "application/json",
@@ -222,7 +245,7 @@ export const translateBiblical = async (text: string, direction: string) => {
   const prompt = `Analise linguisticamente: "${text}" na direção ${direction}.`;
 
   const response = await ai.models.generateContent({
-    model: 'gemini-3.1-flash-lite-preview',
+    model: 'gemini-2.5-flash-lite',
     contents: prompt,
     config: {
       responseMimeType: "application/json",
@@ -264,7 +287,7 @@ export const universalSearch = async (query: string) => {
   `;
 
   const response = await ai.models.generateContent({
-    model: "gemini-3.1-flash-lite-preview",
+    model: "gemini-2.5-flash-lite",
     contents: prompt,
     config: { tools: [{ googleSearch: {} }] },
   });
@@ -280,7 +303,7 @@ export const theologicalLookup = async (term: string) => {
   NÃO repita o termo desnecessariamente.`;
 
   const response = await ai.models.generateContent({
-    model: 'gemini-3.1-flash-lite-preview',
+    model: 'gemini-2.5-flash-lite',
     contents: prompt,
     config: {
       responseMimeType: "application/json",
@@ -303,7 +326,7 @@ export const theologicalLookup = async (term: string) => {
 
 export const portugueseDictionaryLookup = async (word: string) => {
   const response = await ai.models.generateContent({
-    model: 'gemini-3.1-flash-lite-preview',
+    model: 'gemini-2.5-flash-lite',
     contents: `Dicionário para a palavra: ${word}`,
     config: {
       responseMimeType: "application/json",
@@ -326,7 +349,7 @@ export const portugueseDictionaryLookup = async (word: string) => {
 
 export const getBiblicalTimeline = async (reference: string) => {
   const response = await ai.models.generateContent({
-    model: 'gemini-3.1-flash-lite-preview',
+    model: 'gemini-2.5-flash-lite',
     contents: `Cronologia para: ${reference}`,
     config: {
       responseMimeType: "application/json",
